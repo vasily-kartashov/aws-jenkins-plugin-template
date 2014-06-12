@@ -13,5 +13,5 @@ Instructions
 
 Implementing deployment algorithm
 ---------------------------
-Put your deployment logic into PluginRecorder.perform method. Don't forget to return the right return code. 
-The code is not that numerous so you should be able to extend it as you need.
+Put your deployment logic into ```PluginRecorder.perform``` method. Don't forget to return the right status code from 
+this method. This plugin is not that big so you should be able to read the whole code and understand it.
