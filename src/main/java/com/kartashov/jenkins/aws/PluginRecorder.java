@@ -82,7 +82,7 @@ public class PluginRecorder extends Recorder {
         }
 
         public FormValidation doCheckProfileName(@QueryParameter String credentialsFilePath,
-                                                @QueryParameter String profileName) {
+                                                 @QueryParameter String profileName) {
             try {
                 new Configuration(credentialsFilePath).getProfile(profileName);
                 return FormValidation.ok();

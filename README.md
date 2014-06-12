@@ -1,7 +1,7 @@
 AWS Jenkins plugin template
 ===========================
 
-AWS provides you with an almost unlimited possibilities to configure you environments. The deployments to this highly 
+AWS provides you with almost unlimited options to configure you environments. The deployments to this highly 
 customized topologies can become very elaborate. This template provides you with a simple skeleton of a Jenkins plugin,
 that allows you to write your custom deployment logic by using AWS Java SDK.
 
