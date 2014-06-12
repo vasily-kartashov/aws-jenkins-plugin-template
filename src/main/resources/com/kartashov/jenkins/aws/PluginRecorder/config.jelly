@@ -1,14 +1,14 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
     <f:entry
-        title="${%credentials-file}"
-        field="credentialsFile"
-        help="/plugin/aws-jenkins-plugin-template/help/credentials-file.html">
+        title="${%credentials-file-path}"
+        field="credentialsFilePath"
+        help="/plugin/aws-jenkins-plugin-template/help/credentials-file-path.html">
         <f:textbox />
     </f:entry>
     <f:entry
-        title="${%profile}"
-        field="profile"
-        help="/plugin/aws-jenkins-plugin-template/help/profile.html">
+        title="${%profile-name}"
+        field="profileName"
+        help="/plugin/aws-jenkins-plugin-template/help/profile-name.html">
         <f:textbox />
     </f:entry>
 </j:jelly>

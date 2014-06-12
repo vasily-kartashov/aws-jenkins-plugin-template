@@ -11,24 +11,22 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
-import org.apache.commons.io.FileUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import java.io.File;
 import java.io.IOException;
 
 public class PluginRecorder extends Recorder {
 
-    private String credentialsFile;
-    private String profile;
+    private String credentialsFilePath;
+    private String profileName;
 
     @DataBoundConstructor
-    public PluginRecorder(String credentialsFile, String profile) {
+    public PluginRecorder(String credentialsFilePath, String profileName) {
         super();
-        this.credentialsFile = credentialsFile;
-        this.profile = profile;
+        this.credentialsFilePath = credentialsFilePath;
+        this.profileName = profileName;
     }
 
     public BuildStepMonitor getRequiredMonitorService() {
@@ -37,8 +35,14 @@ public class PluginRecorder extends Recorder {
 
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
             throws InterruptedException, IOException {
-        ConfigReader reader = new ConfigReader(credentialsFile, profile);
-        CloudService service = new CloudService(reader);
+        Configuration.Profile profile;
+        try {
+            profile = new Configuration(credentialsFilePath).getProfile(profileName);
+        } catch (Configuration.Exception e) {
+            listener.getLogger().println("[ERROR] " + e.getMessage());
+            return false;
+        }
+        CloudService service = new CloudService(profile);
 
         listener.getLogger().println("Plugin executed");
 
@@ -68,55 +72,31 @@ public class PluginRecorder extends Recorder {
             return request.bindJSON(PluginRecorder.class, formData);
         }
 
-        public FormValidation doCheckCredentialsFile(@QueryParameter String credentialsFile) {
-            File f = new File(credentialsFile);
-            if (!f.exists()) {
-                return FormValidation.error("The specified file does not exist");
-            } else if (f.isDirectory()) {
-                return FormValidation.error("The specified path points to a directory");
-            } else {
-                return FormValidation.ok();
-            }
-        }
-
-        public FormValidation doCheckProfile(@QueryParameter String credentialsFile,
-                                             @QueryParameter String profile) {
-            if (profile.isEmpty()) {
-                return FormValidation.error("Profile cannot be empty");
-            }
-            File file = new File(credentialsFile);
+        public FormValidation doCheckCredentialsFilePath(@QueryParameter String credentialsFilePath) {
             try {
-                if (!FileUtils.readFileToString(file).contains("[" + profile + "]")) {
-                    return FormValidation.error("Cannot find the section [" + profile + "]");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                return FormValidation.error("Cannot read credentials file");
+                new Configuration(credentialsFilePath);
+                return FormValidation.ok();
+            } catch (Configuration.Exception e) {
+                return FormValidation.error(e.getMessage());
             }
-            if (doCheckCredentialsFile(credentialsFile).kind.equals(FormValidation.Kind.OK)) {
-                ConfigReader reader = new ConfigReader(credentialsFile, profile);
-                if (reader.getAccessKey().isEmpty()) {
-                    return FormValidation.error("Access key is missing");
-                }
-                if (reader.getSecretKey().isEmpty()) {
-                    return FormValidation.error("Secret key is missing");
-                }
-                if (reader.getRegion().isEmpty()) {
-                    return FormValidation.error("Region is missing");
-                }
+        }
+
+        public FormValidation doCheckProfileName(@QueryParameter String credentialsFilePath,
+                                                @QueryParameter String profileName) {
+            try {
+                new Configuration(credentialsFilePath).getProfile(profileName);
                 return FormValidation.ok();
-            } else {
-                // return ok for now as we cannot check the aws profile yet
-                return FormValidation.ok();
+            } catch (Configuration.Exception e) {
+                return FormValidation.error(e.getMessage());
             }
         }
     }
 
-    public String getCredentialsFile() {
-        return credentialsFile;
+    public String getCredentialsFilePath() {
+        return credentialsFilePath;
     }
 
-    public String getProfile() {
-        return profile;
+    public String getProfileName() {
+        return profileName;
     }
 }
