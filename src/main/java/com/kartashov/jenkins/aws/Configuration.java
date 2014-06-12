@@ -38,7 +38,7 @@ public class Configuration {
             e.printStackTrace();
             throw new Exception("Cannot read credentials file");
         }
-        HierarchicalINIConfiguration configuration = null;
+        HierarchicalINIConfiguration configuration;
         try {
             configuration = new HierarchicalINIConfiguration(credentialsFile);
         } catch (ConfigurationException e) {
