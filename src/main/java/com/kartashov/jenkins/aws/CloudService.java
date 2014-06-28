@@ -1,17 +1,13 @@
 package com.kartashov.jenkins.aws;
 
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
 
 public class CloudService {
 
-    private AWSCredentials credentials;
-    private Region region;
+    private LoggerFacade logger;
 
-    public CloudService(Configuration.Profile profile) {
-        credentials = new BasicAWSCredentials(profile.getAccessKey(), profile.getSecretKey());
-        region = Region.getRegion(Regions.fromName(profile.getRegion()));
+    public CloudService(AWSCredentials credentials, Region region, LoggerFacade logger) {
+        this.logger = logger;
     }
 }
